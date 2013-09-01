@@ -9,9 +9,7 @@
 # the extensions in FileTypesToOrganize. It will rename the files and move them to folders under
 # DestinationRootPath, e.g. :
 # DestinationRootPath\2011\02_February\2011-02-09_21-41-47_680.jpg
-
-
-# MarcelT:Changed destination: DestinationRootPath\2011\201102\20110209_214147_680.jpg
+# I changed it to: DestinationRootPath\2011\201102\20110209_214147_680.jpg
 #
 # JPG files contain EXIF data which has a DateTaken value. Other media files have a MediaCreated
 # date. 
@@ -100,6 +98,7 @@ function BuildDesinationPath($Path, $Date) {
 
 $RandomGenerator = New-Object System.Random
 function BuildNewFilePath($Path, $Date, $Extension) {
+	#return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyy-MM-dd_HH-mm-ss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
 	return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
 }
 
@@ -126,7 +125,6 @@ function GetAllSourceFiles() {
 	return @(Get-ChildItem $SourceRootPath -Recurse -Include $FileTypesToOrganize)
 }
 
-
 # ============================================================================================== 
 # Main
 # ============================================================================================== 
@@ -139,15 +137,15 @@ foreach ($File in $Files) {
 		CreateDirectory $DestinationPath
 		$NewFilePath = BuildNewFilePath $DestinationPath $CreationDate $File.Extension
 		
-		Write-Host $File.FullName -> $NewFilePath
 		if (!(Test-Path $NewFilePath)) {
 			Move-Item $File.FullName $NewFilePath
+            Write-Host $File.FullName -> $NewFilePath
 		} else {
-			Write-Host "Unable to rename file. File already exists. "
+			Write-Warning "Unable to rename file. File already exists."
 			ConfirmContinueProcessing
 		}
 	} else {
-		Write-Host "Unable to determine creation date of file. " $File.FullName
+		Write-Warning "Unable to determine creation date of file: $File" 
 		ConfirmContinueProcessing
 	}
 } 
