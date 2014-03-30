@@ -25,42 +25,54 @@ $DestinationRootPath = "\\diskstation\photo"
 $FileTypesToOrganize = @("*.jpg","*.avi","*.mp4", "*.3gp", "*.mov")
 $global:ConfirmAll = $false
 
-function GetMediaCreatedDate($File) {
+function GetMediaCreatedDate($File) 
+{
 	$Shell = New-Object -ComObject Shell.Application
 	$Folder = $Shell.Namespace($File.DirectoryName)
 	$CreatedDate = $Folder.GetDetailsOf($Folder.Parsename($File.Name), 191).Replace([char]8206, ' ').Replace([char]8207, ' ')
 
-	if (($CreatedDate -as [DateTime]) -ne $null) {
+	if (($CreatedDate -as [DateTime]) -ne $null) 
+	{
 		return [DateTime]::Parse($CreatedDate)
-	} else {
+	} 
+	else 
+	{
 		return $null
 	}
 }
 
-function GetCreatedDateFromFilename($File) {
+function GetCreatedDateFromFilename($File) 
+{
 	$Filename = $File.Name.Substring(0, 11).Replace("_", " ") + $File.Name.Substring(11, 8).Replace("-", ":")
 	Write-Host $Filename
 	Write-Host ($Filename -as [DateTime])
-	if (($Filename -as [DateTime]) -ne $null) {
+	if (($Filename -as [DateTime]) -ne $null) 
+	{
 		return [DateTime]::ParseExact($Filename,"yyyy-MM-dd HH:mm:ss",[System.Globalization.CultureInfo]::InvariantCulture) 
-	} else {
+	} 
+	else 
+	{
 		return $null
 	}
 }
 
-function GetCreatedDateFromFileInfo($File) {
+function GetCreatedDateFromFileInfo($File) 
+{
 	return $File.CreationTime
 }
 
-function ConvertAsciiArrayToString($CharArray) {
+function ConvertAsciiArrayToString($CharArray) 
+{
 	$ReturnVal = ""
-	foreach ($Char in $CharArray) {
+	foreach ($Char in $CharArray) 
+	{
 		$ReturnVal += [char]$Char
 	}
 	return $ReturnVal
 }
 
-function GetDateTakenFromExifData($File) {
+function GetDateTakenFromExifData($File) 
+{
 	$FileDetail = New-Object -TypeName System.Drawing.Bitmap -ArgumentList $File.Fullname 
 	$DateTimePropertyItem = $FileDetail.GetPropertyItem(36867)
 	$FileDetail.Dispose()
@@ -74,15 +86,20 @@ function GetDateTakenFromExifData($File) {
 	
 	$DateString = [String]::Format("{0}/{1}/{2} {3}:{4}:{5}", $Year, $Month, $Day, $Hour, $Minute, $Second)
 	
-	if (($DateString -as [DateTime]) -ne $null) {
+	if (($DateString -as [DateTime]) -ne $null) 
+	{
 		return [DateTime]::Parse($DateString)
-	} else {
+	}
+	else
+	{
 		return $null
 	}
 }
 
-function GetCreationDate($File) {
-	switch ($File.Extension) { 
+function GetCreationDate($File) 
+{
+	switch ($File.Extension) 
+	{ 
         ".jpg" { $CreationDate = GetDateTakenFromExifData($File) } 
 		".3gp" { $CreationDate =  GetCreatedDateFromFilename($File) }
 		".mov" { $CreationDate =  GetCreatedDateFromFileInfo($File) }
@@ -91,37 +108,46 @@ function GetCreationDate($File) {
 	return $CreationDate
 }
 
-function BuildDesinationPath($Path, $Date) {
+function BuildDesinationPath($Path, $Date) 
+{
 	#return [String]::Format("{0}\{1}\{2}_{3}", $Path, $Date.Year, $Date.ToString("MM"), $Date.ToString("MMMM"))
 	return [String]::Format("{0}\{1}\{2}{3}", $Path, $Date.Year, $Date.Year, $Date.ToString("MM"))
 }
 
 $RandomGenerator = New-Object System.Random
-function BuildNewFilePath($Path, $Date, $Extension) {
+function BuildNewFilePath($Path, $Date, $Extension) 
+{
 	#return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyy-MM-dd_HH-mm-ss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
 	return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
 }
 
-function CreateDirectory($Path){
-	if (!(Test-Path $Path)) {
+function CreateDirectory($Path)
+{
+	if (!(Test-Path $Path)) 
+	{
 		New-Item $Path -Type Directory | out-null
         Write-Host "Folder created -" $Path
 	}
 }
 
-function ConfirmContinueProcessing() {
-	if ($global:ConfirmAll -eq $false) {
+function ConfirmContinueProcessing() 
+{
+	if ($global:ConfirmAll -eq $false) 
+	{
 		$Response = Read-Host "Continue? (Y/N/A)"
-		if ($Response.Substring(0,1).ToUpper() -eq "A") {
+		if ($Response.Substring(0,1).ToUpper() -eq "A") 
+		{
 			$global:ConfirmAll = $true
 		}
-		if ($Response.Substring(0,1).ToUpper() -eq "N") { 
+		if ($Response.Substring(0,1).ToUpper() -eq "N") 
+		{ 
 			break 
 		}
 	}
 }
 
-function GetAllSourceFiles() {
+function GetAllSourceFiles() 
+{
 	return @(Get-ChildItem $SourceRootPath -Recurse -Include $FileTypesToOrganize)
 }
 
@@ -130,21 +156,28 @@ function GetAllSourceFiles() {
 # ============================================================================================== 
 Write-Host "Begin Organize"
 $Files = GetAllSourceFiles
-foreach ($File in $Files) {
+foreach ($File in $Files) 
+{
 	$CreationDate = GetCreationDate($File)
-	if (($CreationDate -as [DateTime]) -ne $null) {
+	if (($CreationDate -as [DateTime]) -ne $null) 
+	{
 		$DestinationPath = BuildDesinationPath $DestinationRootPath $CreationDate
 		CreateDirectory $DestinationPath
 		$NewFilePath = BuildNewFilePath $DestinationPath $CreationDate $File.Extension
 		
-		if (!(Test-Path $NewFilePath)) {
+		if (!(Test-Path $NewFilePath)) 
+		{
 			Move-Item $File.FullName $NewFilePath
             Write-Host $File.FullName -> $NewFilePath
-		} else {
+		} 
+		else 
+		{
 			Write-Warning "Unable to rename file. File already exists."
 			ConfirmContinueProcessing
 		}
-	} else {
+	} 
+	else 
+	{
 		Write-Warning "Unable to determine creation date of file: $File" 
 		ConfirmContinueProcessing
 	}
