@@ -264,7 +264,7 @@ foreach ($File in $Files)
 		
 		if (!(Test-Path $NewFilePath)) 
 		{
-			#Move-Item $File.FullName $NewFilePath
+			Move-Item $File.FullName $NewFilePath
             Write-Host $File.FullName -> $NewFilePath
 		} 
 		else 
