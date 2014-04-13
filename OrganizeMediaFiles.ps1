@@ -261,7 +261,7 @@ function Get-AllSourceFiles
 }
 
 
-function OrganizeMedia
+function Add-OrganizeMedia
 {
     [CmdletBinding()] 
     param ( 
@@ -328,4 +328,4 @@ function OrganizeMedia
 # Main
 # ============================================================================================== 
 
-OrganizeMedia -SourceRootPath "\\diskstation\photo\upload\Marcel" -DestinationRootPath "\\diskstation\photo" -verbose
+Add-OrganizeMedia -SourceRootPath "\\diskstation\photo\upload\Marcel" -DestinationRootPath "\\diskstation\photo" -verbose
