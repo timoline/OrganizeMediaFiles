@@ -1,18 +1,17 @@
 # ==============================================================================================
-# 
 # Microsoft PowerShell Source File 
 # 
 # This script will organize photo and video files by renaming the file based on the date the
-# file was created and moving them into folders based on the year and month. It will also append
-# a random number to the end of the file name just to avoid name collisions. The script will
-# look in the SourceRootPath (recursing through all subdirectories) for any files matching
-# the extensions in FileTypesToOrganize. It will rename the files and move them to folders under
-# DestinationRootPath, e.g. :
-# DestinationRootPath\2011\02_February\2011-02-09_21-41-47_680.jpg
-# I changed it to: DestinationRootPath\2011\201102\20110209_214147_680.jpg
+# file was created and moving them into folders based on the year and month. 
+# It will also append a sequenced number to the end of the file name if the name already exists to avoid name collisions. 
+# The script will look in the SourceRootPath (recursing through all subdirectories) for any files matching
+# the extensions in FileTypesToOrganize. It will rename the files and move them to folders underDestinationRootPath, e.g. :
 #
-# JPG files contain EXIF data which has a DateTaken value. Other media files have a MediaCreated
-# date. 
+# DestinationRootPath\2011\02_February\2011-02-09_21-41-47_680.jpg
+# Will be changed to: DestinationRootPath\2011\201102\20110209_214147_1.jpg
+#
+# JPG files contain EXIF data which has a DateTaken value. 
+# Other media files have a MediaCreated date. 
 #
 # The code for extracting the EXIF DateTaken is based on a script by Kim Oppalfens:
 # #http://blogcastrepository.com/blogs/kim_oppalfenss_systems_management_ideas/archive/2007/12/02/organize-your-digital-photos-into-folders-usi#ng-powershell-and-exif-data.aspx
@@ -203,11 +202,11 @@ function Build-NewFilePath
 	#return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
     if ($Affix)
     {
-        return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $Affix, $Extension)
+        return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $Affix, $Extension.ToLower())
     }
     else
     {
-        return [String]::Format("{0}\{1}{2}", $Path, $Date.ToString("yyyyMMdd_HHmmss"),$Extension)
+        return [String]::Format("{0}\{1}{2}", $Path, $Date.ToString("yyyyMMdd_HHmmss"),$Extension.ToLower())
     }
 }
 
