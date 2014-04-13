@@ -30,7 +30,7 @@ function Get-MediaCreatedDate
         [parameter(Position=0,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $File  
     )
-
+    #Write-Verbose "Getting Media CreatedDate..."
 	$Shell = New-Object -ComObject Shell.Application
 	$Folder = $Shell.Namespace($File.DirectoryName)
 	$CreatedDate = $Folder.GetDetailsOf($Folder.Parsename($File.Name), 191).Replace([char]8206, ' ').Replace([char]8207, ' ')
@@ -53,6 +53,7 @@ function Get-CreatedDateFromFilename
         [parameter(Position=0,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $File 
     )
+    #Write-Verbose "Getting CreatedDate From Filename..."
 
 	$Filename = $File.Name.Substring(0, 11).Replace("_", " ") + $File.Name.Substring(11, 8).Replace("-", ":")
 	Write-Host $Filename
@@ -76,6 +77,7 @@ function Get-CreatedDateFromFileInfo
         $File 
     )
 
+    #Write-Verbose "Getting CreatedDate From FileInfo..."
 	return $File.CreationTime
 }
 
@@ -104,6 +106,7 @@ function Get-DateTakenFromExifData
         [parameter(Position=0,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $File 
     )
+    #Write-Verbose "Getting DateTaken From ExifData..."
 
 	$FileDetail = New-Object -TypeName System.Drawing.Bitmap -ArgumentList $File.Fullname 
 	$DateTimePropertyItem = $FileDetail.GetPropertyItem(36867)
@@ -137,6 +140,7 @@ function Get-CreationDate
         $File  
     )
 
+    #Write-Verbose "Checking extension..."
 	switch ($File.Extension) 
     { 
         ".jpg" { $CreationDate = Get-DateTakenFromExifData($File) } 
@@ -166,10 +170,12 @@ function Build-DesinationPath
 	#return [String]::Format("{0}\{1}\{2}_{3}", $Path, $Date.Year, $Date.ToString("MM"), $Date.ToString("MMMM"))
 	if ($FolderName) 
 	{
+        #Write-Verbose "Creating new foldername: $FolderName"
 		return [String]::Format("{0}\{1}\{2}", $Path, $Date.Year, $FolderName)
 	}
 	else 
 	{
+        #Write-Verbose "Creating new foldername..."
 		return [String]::Format("{0}\{1}\{2}{3}", $Path, $Date.Year, $Date.Year, $Date.ToString("MM"))
 	}
 }
@@ -185,13 +191,24 @@ function Build-NewFilePath
         # Date
         [Parameter(Position=1,Mandatory=$true)]
         $Date,  
+        # Affix
+        [Parameter(Position=2)]
+        $Affix,
         # Extension
-        [Parameter(Position=2,Mandatory=$true)]
+        [Parameter(Position=3,Mandatory=$true)]
         $Extension
     )
-
-    $RandomGenerator = New-Object System.Random
-	return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
+    #Write-Verbose "Creating new filename..."
+    #$RandomGenerator = New-Object System.Random
+	#return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
+    if ($Affix)
+    {
+        return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $Affix, $Extension)
+    }
+    else
+    {
+        return [String]::Format("{0}\{1}{2}", $Path, $Date.ToString("yyyyMMdd_HHmmss"),$Extension)
+    }
 }
 
 function Create-Directory
@@ -207,7 +224,7 @@ function Create-Directory
 	if (!(Test-Path $Path)) 
 	{
 		New-Item $Path -Type Directory | out-null
-        Write-Host "Folder created -" $Path
+        #Write-Verbose "Folder created: $Path"
 	}
 }
 
@@ -239,46 +256,76 @@ function Get-AllSourceFiles
         [parameter(Position=1,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $FileExtensions
     )
-
+    Write-Verbose "Getting Source files..."
 	return @(Get-ChildItem $SourceRootPath -Recurse -Include $FileTypesToOrganize)
+}
+
+
+function OrganizeMedia
+{
+    [CmdletBinding()] 
+    param ( 
+        # SourceRootPath
+        [parameter(Position=0,ValueFromPipelineByPropertyName=$true )]
+        [string]
+        $SourceRootPath = "\\diskstation\photo\upload\Marcel",
+        # DestinationRootPath
+        [Parameter(Position=1,ValueFromPipelineByPropertyName=$true )]
+        $DestinationRootPath = "\\diskstation\photo",
+        # FileTypesToOrganize
+        [Parameter(Position=2,ValueFromPipelineByPropertyName=$true )]
+        [ValidateSet("*.jpg","*.avi","*.mp4", "*.3gp", "*.mov")]
+        $FileTypesToOrganize = @("*.jpg","*.avi","*.mp4", "*.3gp", "*.mov"),        
+        # FolderName
+        [Parameter(Position=3)]
+        $FolderName = ""
+    )
+
+    Write-Verbose "Begin Organizing media..."
+    
+    $Files = Get-AllSourceFiles -Path $SourceRootPath -FileExtensions $FileTypesToOrganize
+    foreach ($File in $Files) 
+    {
+	    $CreationDate = Get-CreationDate -File $File
+	    if (($CreationDate -as [DateTime]) -ne $null) 
+	    {
+		    $DestinationPath = Build-DesinationPath -Path $DestinationRootPath -Date $CreationDate -FolderName $FolderName
+		    Create-Directory -Path $DestinationPath
+		    $NewFilePath = Build-NewFilePath -Path $DestinationPath -Date $CreationDate -Extension $File.Extension
+           
+            $i=1
+            while (Test-Path $NewFilePath)
+            {
+                $NewFilePath = Build-NewFilePath -Path $DestinationPath -Date $CreationDate -Affix $i -Extension $File.Extension  
+                $i++                     
+            }
+
+            Move-Item -Path $File.FullName -Destination $NewFilePath -Verbose
+<# 		
+		    if (-not(Test-Path $NewFilePath)) 
+		    {
+			    Move-Item -Path $File.FullName -Destination $NewFilePath -Verbose
+                #Write-Verbose "$File -> $NewFilePath"
+		    } 
+		    else 
+		    {
+			    Write-Warning "Unable to rename file. File already exists."
+			    Confirm-ContinueProcessing
+		    }
+#>
+	    } 
+	    else 
+	    {
+		    Write-Warning "Unable to determine creation date of file: $File" 
+		    Confirm-ContinueProcessing
+	    }
+    } 
+
+    Write-Verbose "Finished Organizing media..."
 }
 
 # ============================================================================================== 
 # Main
 # ============================================================================================== 
-$SourceRootPath = "\\diskstation\photo\upload\Marcel"
-$DestinationRootPath = "\\diskstation\photo"
-$FolderName = ""
-$FileTypesToOrganize = @("*.jpg","*.avi","*.mp4", "*.3gp", "*.mov")
 
-Write-Host "Begin Organize"
-$Files = Get-AllSourceFiles -Path $SourceRootPath -FileExtensions $FileTypesToOrganize
-foreach ($File in $Files) 
-{
-	$CreationDate = Get-CreationDate -File $File
-	if (($CreationDate -as [DateTime]) -ne $null) 
-	{
-		$DestinationPath = Build-DesinationPath -Path $DestinationRootPath -Date $CreationDate -FolderName $FolderName
-		Create-Directory -Path $DestinationPath
-		$NewFilePath = Build-NewFilePath -Path $DestinationPath -Date $CreationDate -Extension $File.Extension
-		
-		if (!(Test-Path $NewFilePath)) 
-		{
-			Move-Item $File.FullName $NewFilePath
-            Write-Host $File.FullName -> $NewFilePath
-		} 
-		else 
-		{
-			Write-Warning "Unable to rename file. File already exists."
-			Confirm-ContinueProcessing
-		}
-	} 
-	else 
-	{
-		Write-Warning "Unable to determine creation date of file: $File" 
-		Confirm-ContinueProcessing
-	}
-} 
-
-Write-Host "Done"
-# ============================================================================================== 
+OrganizeMedia -SourceRootPath "\\diskstation\photo\upload\Marcel" -DestinationRootPath "\\diskstation\photo" -verbose
