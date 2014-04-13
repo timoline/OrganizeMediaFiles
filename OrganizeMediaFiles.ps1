@@ -327,4 +327,8 @@ function Add-OrganizeMedia
 # Main
 # ============================================================================================== 
 
-Add-OrganizeMedia -SourceRootPath "\\diskstation\photo\upload\Marcel" -DestinationRootPath "\\diskstation\photo" -verbose
+$Source = "P:\2006\vrijgezelle feest justin"
+$Dest = "\\diskstation\photo"
+$Folder = "vrijgezelle feest justin"
+
+Add-OrganizeMedia -SourceRootPath $Source -DestinationRootPath $Dest -FolderName $Folder -verbose
