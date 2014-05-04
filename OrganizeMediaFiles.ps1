@@ -34,7 +34,6 @@ function Get-MediaCreatedDate
         [parameter(Position=0,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $File  
     )
-    #Write-Verbose "Getting Media CreatedDate..."
 	$Shell = New-Object -ComObject Shell.Application
 	$Folder = $Shell.Namespace($File.DirectoryName)
 	$CreatedDate = $Folder.GetDetailsOf($Folder.Parsename($File.Name), 191).Replace([char]8206, ' ').Replace([char]8207, ' ')
@@ -57,7 +56,6 @@ function Get-CreatedDateFromFilename
         [parameter(Position=0,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $File 
     )
-    #Write-Verbose "Getting CreatedDate From Filename..."
 
 	$Filename = $File.Name.Substring(0, 11).Replace("_", " ") + $File.Name.Substring(11, 8).Replace("-", ":")
 	Write-Host $Filename
@@ -81,7 +79,6 @@ function Get-CreatedDateFromFileInfo
         $File 
     )
 
-    #Write-Verbose "Getting CreatedDate From FileInfo..."
 	return $File.CreationTime
 }
 
@@ -110,7 +107,6 @@ function Get-DateTakenFromExifData
         [parameter(Position=0,Mandatory=$true,ValueFromPipelineByPropertyName=$true )]
         $File 
     )
-    #Write-Verbose "Getting DateTaken From ExifData..."
 
 	$FileDetail = New-Object -TypeName System.Drawing.Bitmap -ArgumentList $File.Fullname 
 	$DateTimePropertyItem = $FileDetail.GetPropertyItem(36867)
@@ -144,7 +140,6 @@ function Get-CreationDate
         $File  
     )
 
-    #Write-Verbose "Checking extension..."
 	switch ($File.Extension) 
     { 
         ".jpg" { $CreationDate = Get-DateTakenFromExifData($File) } 
@@ -171,15 +166,12 @@ function Build-DesinationPath
         $FolderName 
     )
 
-	#return [String]::Format("{0}\{1}\{2}_{3}", $Path, $Date.Year, $Date.ToString("MM"), $Date.ToString("MMMM"))
 	if ($FolderName) 
 	{
-        #Write-Verbose "Creating new foldername: $FolderName"
 		return [String]::Format("{0}\{1}\{2}", $Path, $Date.Year, $FolderName)
 	}
 	else 
 	{
-        #Write-Verbose "Creating new foldername..."
 		return [String]::Format("{0}\{1}\{2}{3}", $Path, $Date.Year, $Date.Year, $Date.ToString("MM"))
 	}
 }
@@ -202,9 +194,7 @@ function Build-NewFilePath
         [Parameter(Position=3,Mandatory=$true)]
         $Extension
     )
-    #Write-Verbose "Creating new filename..."
-    #$RandomGenerator = New-Object System.Random
-	#return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $RandomGenerator.Next(100, 1000).ToString(), $Extension)
+
     if ($Affix)
     {
         return [String]::Format("{0}\{1}_{2}{3}", $Path, $Date.ToString("yyyyMMdd_HHmmss"), $Affix, $Extension.ToLower())
@@ -228,7 +218,6 @@ function Create-Directory
 	if (!(Test-Path $Path)) 
 	{
 		New-Item $Path -Type Directory | out-null
-        #Write-Verbose "Folder created: $Path"
 	}
 }
 
@@ -305,18 +294,7 @@ function Add-OrganizeMedia
             }
 
             Move-Item -Path $File.FullName -Destination $NewFilePath -Verbose
-<# 		
-		    if (-not(Test-Path $NewFilePath)) 
-		    {
-			    Move-Item -Path $File.FullName -Destination $NewFilePath -Verbose
-                #Write-Verbose "$File -> $NewFilePath"
-		    } 
-		    else 
-		    {
-			    Write-Warning "Unable to rename file. File already exists."
-			    Confirm-ContinueProcessing
-		    }
-#>
+
 	    } 
 	    else 
 	    {
