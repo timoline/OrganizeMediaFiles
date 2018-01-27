@@ -36,7 +36,7 @@ function Get-MediaCreatedDate
     )
 	$Shell = New-Object -ComObject Shell.Application
 	$Folder = $Shell.Namespace($File.DirectoryName)
-	$CreatedDate = $Folder.GetDetailsOf($Folder.Parsename($File.Name), 191).Replace([char]8206, ' ').Replace([char]8207, ' ')
+	$CreatedDate = $Folder.GetDetailsOf($Folder.Parsename($File.Name), 4).Replace([char]8206, ' ').Replace([char]8207, ' ')
 
 	if (($CreatedDate -as [DateTime]) -ne $null) 
 	{
@@ -309,9 +309,10 @@ function Add-OrganizeMedia
 # ============================================================================================== 
 # Main
 # ============================================================================================== 
-
 # $Source = "P:\Upload\marcel"
-# $Dest = "\\diskstation\photo"
+# $Source = "P:\Upload\lisette"
+# 
+# $Dest = "P:\"
 # $Folder = ""
 
 # Add-OrganizeMedia -SourceRootPath $Source -DestinationRootPath $Dest -FolderName $Folder -verbose
