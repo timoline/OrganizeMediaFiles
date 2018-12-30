@@ -268,7 +268,7 @@ function Add-OrganizeMedia
         # FileTypesToOrganize
         [Parameter(Position = 2, ValueFromPipelineByPropertyName = $true )]
         [ValidateSet("*.jpg", "*.avi", "*.mp4", "*.3gp", "*.mov")]
-        $FileTypesToOrganize = @("*.jpg", "*.avi", "*.mp4", "*.3gp", "*.mov"),        
+        $FileTypesToOrganize = @("*.jpg"),        
         # FolderName
         [Parameter(Position = 3)]
         $FolderName = ""
