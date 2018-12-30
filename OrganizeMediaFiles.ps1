@@ -5,7 +5,7 @@
 # file was created and moving them into folders based on the year and month. 
 #
 # JPG files contain EXIF data which has a DateTaken value. 
-# Other media files have a MediaCreated date. 
+# Other media files have a MediaCreated date.  
 #
 # It will also append a sequenced number to the end of the file name if the name already exists to avoid name collisions. 
 # The script will look in the SourceRootPath (recursing through all subdirectories) for any files matching
