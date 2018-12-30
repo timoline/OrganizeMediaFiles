@@ -38,7 +38,7 @@ function Get-MediaCreatedDate
     $Folder = $Shell.Namespace($File.DirectoryName)
     $CreatedDate = $Folder.GetDetailsOf($Folder.Parsename($File.Name), 4).Replace([char]8206, ' ').Replace([char]8207, ' ')
 
-    if (($CreatedDate -as [DateTime]) -ne $null) 
+    if ($null -ne ($CreatedDate -as [DateTime])) 
     {
         return [DateTime]::Parse($CreatedDate)
     } 
@@ -60,7 +60,7 @@ function Get-CreatedDateFromFilename
     $Filename = $File.Name.Substring(0, 11).Replace("_", " ") + $File.Name.Substring(11, 8).Replace("-", ":")
     Write-Host $Filename
     Write-Host ($Filename -as [DateTime])
-    if (($Filename -as [DateTime]) -ne $null) 
+    if ( $null -ne ($Filename -as [DateTime])) 
     {
         return [DateTime]::ParseExact($Filename, "yyyy-MM-dd HH:mm:ss", [System.Globalization.CultureInfo]::InvariantCulture) 
     } 
@@ -121,7 +121,7 @@ function Get-DateTakenFromExifData
 	
     $DateString = [String]::Format("{0}/{1}/{2} {3}:{4}:{5}", $Year, $Month, $Day, $Hour, $Minute, $Second)
 	
-    if (($DateString -as [DateTime]) -ne $null) 
+    if ($null -ne ($DateString -as [DateTime])) 
     {
         return [DateTime]::Parse($DateString)
     } 
@@ -150,7 +150,7 @@ function Get-CreationDate
     return $CreationDate
 }
 
-function Build-DesinationPath
+function New-DesinationPath
 {
     [CmdletBinding()] 
     param ( 
@@ -176,7 +176,7 @@ function Build-DesinationPath
     }
 }
 
-function Build-NewFilePath
+function New-FilePath
 {
     [CmdletBinding()] 
     param ( 
@@ -205,7 +205,7 @@ function Build-NewFilePath
     }
 }
 
-function Create-Directory
+function New-MediaDirectory
 {
     [CmdletBinding()] 
     param ( 
@@ -280,16 +280,16 @@ function Add-OrganizeMedia
     foreach ($File in $Files) 
     {
         $CreationDate = Get-CreationDate -File $File
-        if (($CreationDate -as [DateTime]) -ne $null) 
+        if ($null -ne ($CreationDate -as [DateTime])) 
         {
-            $DestinationPath = Build-DesinationPath -Path $DestinationRootPath -Date $CreationDate -FolderName $FolderName
-            Create-Directory -Path $DestinationPath
-            $NewFilePath = Build-NewFilePath -Path $DestinationPath -Date $CreationDate -Extension $File.Extension
+            $DestinationPath = New-DesinationPath -Path $DestinationRootPath -Date $CreationDate -FolderName $FolderName
+            New-MediaDirectory -Path $DestinationPath
+            $NewFilePath = New-FilePath -Path $DestinationPath -Date $CreationDate -Extension $File.Extension
            
             $i = 1
             while (Test-Path $NewFilePath)
             {
-                $NewFilePath = Build-NewFilePath -Path $DestinationPath -Date $CreationDate -Affix $i -Extension $File.Extension  
+                $NewFilePath = New-FilePath -Path $DestinationPath -Date $CreationDate -Affix $i -Extension $File.Extension  
                 $i++                     
             }
 
