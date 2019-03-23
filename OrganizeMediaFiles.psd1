@@ -2,7 +2,7 @@
     # Module manifest for module 'PSRES'
 
     # MODULE
-    ModuleToProcess        = 'OrganizeMediaFiles.psm1'    # Script module or binary module file associated with this manifest
+    RootModule             = 'OrganizeMediaFiles.psm1'    # Script module or binary module file associated with this manifest
     ModuleVersion          = '2.0'
     GUID                   = '44232731-b480-4ec4-b56b-9d6f4ea2de9a'
     Description            = 'Organize your media files'
