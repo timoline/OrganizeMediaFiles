@@ -1,10 +1,8 @@
 OrganizeMediaFiles
 ==================
-OrganizeMediaFiles powershell 
+Organize your MediaFiles with this Powershell  Module
 
-forked from:
-https://bitbucket.org/toddropog/organize-media-files
-
+Forked from: https://bitbucket.org/toddropog/organize-media-files
 
 * This script will organize photo and video files by renaming the file based on the date the
 file was created and moving them into folders based on the year and month. 
