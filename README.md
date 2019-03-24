@@ -13,6 +13,16 @@ the extensions in FileTypesToOrganize.
 
 ## Example
 ```powershell
+$Source = "P:\Upload\lisa"
+
+$Dest = "P:\"
+$Folder = ""
+
+Add-OrganizeMedia -SourceRootPath $Source -DestinationRootPath $Dest -FolderName $Folder -verbose
+```
+
+
+```powershell
 "SourceRootPath\\IMG_2011-02-09_21-41-47_680.jpg"
 ```
 Will be changed to:
@@ -24,14 +34,6 @@ Or if already exists:
 "DestinationRootPath\2011\201102\20110209_214147_1.jpg"
 ```
 
-```powershell
-$Source = "P:\Upload\lisa"
-
-$Dest = "P:\"
-$Folder = ""
-
-Add-OrganizeMedia -SourceRootPath $Source -DestinationRootPath $Dest -FolderName $Folder -verbose
-```
 
 ## Notes
 Forked from: 
