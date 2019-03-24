@@ -9,10 +9,10 @@ function Get-CreationDate
 
     switch ($File.Extension) 
     { 
-        ".jpg" { $CreationDate = Get-DateTakenFromExifData($File) } 
-        ".3gp" { $CreationDate = Get-CreatedDateFromFilename($File) }
-        ".mov" { $CreationDate = Get-CreatedDateFromFileInfo($File) }
-        default { $CreationDate = Get-MediaCreatedDate($File) }
+        ".jpg" { $CreationDate = Get-DateTakenFromExifData -File $File } 
+        ".3gp" { $CreationDate = Get-CreatedDateFromFilename -File $File }
+        ".mov" { $CreationDate = Get-CreatedDateFromFileInfo -File $File }
+        default { $CreationDate = Get-MediaCreatedDate -File $File }
     }
     return $CreationDate
 }

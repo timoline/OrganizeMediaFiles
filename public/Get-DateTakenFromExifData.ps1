@@ -11,12 +11,12 @@ function Get-DateTakenFromExifData
     $DateTimePropertyItem = $FileDetail.GetPropertyItem(36867)
     $FileDetail.Dispose()
 
-    $Year = Convert-AsciiArrayToString $DateTimePropertyItem.value[0..3]
-    $Month = Convert-AsciiArrayToString $DateTimePropertyItem.value[5..6]
-    $Day = Convert-AsciiArrayToString $DateTimePropertyItem.value[8..9]
-    $Hour = Convert-AsciiArrayToString $DateTimePropertyItem.value[11..12]
-    $Minute = Convert-AsciiArrayToString $DateTimePropertyItem.value[14..15]
-    $Second = Convert-AsciiArrayToString $DateTimePropertyItem.value[17..18]
+    $Year = Convert-AsciiArrayToString -CharArray $DateTimePropertyItem.value[0..3]
+    $Month = Convert-AsciiArrayToString -CharArray $DateTimePropertyItem.value[5..6]
+    $Day = Convert-AsciiArrayToString -CharArray $DateTimePropertyItem.value[8..9]
+    $Hour = Convert-AsciiArrayToString -CharArray $DateTimePropertyItem.value[11..12]
+    $Minute = Convert-AsciiArrayToString -CharArray $DateTimePropertyItem.value[14..15]
+    $Second = Convert-AsciiArrayToString -CharArray $DateTimePropertyItem.value[17..18]
 	
     $DateString = [String]::Format("{0}/{1}/{2} {3}:{4}:{5}", $Year, $Month, $Day, $Hour, $Minute, $Second)
 	

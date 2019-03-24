@@ -2,7 +2,7 @@ function Convert-AsciiArrayToString
 {
     [CmdletBinding()] 
     param ( 
-        # File
+        #CharArray 
         [parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName = $true )]
         $CharArray 
     )
