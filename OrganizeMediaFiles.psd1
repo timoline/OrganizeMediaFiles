@@ -3,7 +3,7 @@
 
     # MODULE
     RootModule             = 'OrganizeMediaFiles.psm1'    # Script module or binary module file associated with this manifest
-    ModuleVersion          = '2.0'
+    ModuleVersion          = '2.1'
     GUID                   = '44232731-b480-4ec4-b56b-9d6f4ea2de9a'
     Description            = 'Organize your media files'
 
@@ -25,7 +25,7 @@
     AliasesToExport        = '*'            # Aliases to export from this module
 
     # REQUIREMENTS
-    PowerShellVersion      = '2.0'          # Minimum version of the Windows PowerShell engine required by this module
+    PowerShellVersion      = '5.0'          # Minimum version of the Windows PowerShell engine required by this module
     PowerShellHostName     = ''             # Name of the Windows PowerShell host required by this module
     PowerShellHostVersion  = ''             # Minimum version of the Windows PowerShell host required by this module
     DotNetFrameworkVersion = ''             # Minimum version of the .NET Framework required by this module

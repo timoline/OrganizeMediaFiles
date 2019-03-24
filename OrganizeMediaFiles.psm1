@@ -1,26 +1,20 @@
-function Test-ElevatedShell
+# region Load of module functions 
+$PublicFunctions = @( Get-ChildItem -Path $PSScriptRoot\public\*.ps1 -ErrorAction SilentlyContinue )
+$PrivateFunctions = @( Get-ChildItem -Path $PSScriptRoot\private\*.ps1 -ErrorAction SilentlyContinue )
+
+# Load the separate function files from the private and public folders.
+$AllFunctions = $PublicFunctions + $PrivateFunctions
+foreach ($function in $AllFunctions)
 {
-    $user = [Security.Principal.WindowsIdentity]::GetCurrent()
-    (New-Object Security.Principal.WindowsPrincipal $user).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    try
+    {
+        . $function.Fullname
+    }
+    catch
+    {
+        Write-Error -Message "Failed to import function $($function.fullname): $_"
+    }
 }
 
-
-if (!(Test-ElevatedShell))
-{
-
-    $warning = @"
-	To run commands exposed by this module on Windows Vista, Windows Server 2008, and later versions of Windows,
-	you must start an elevated Windows PowerShell console. You must have Administrator privligies on the remote
-	computers and the remote registry service has to be running.
-"@
-
-    Write-Warning $warning	
-    Exit
-}
-
-# dot-source all function files
-Get-ChildItem -Path $PSScriptRoot\*.ps1 | Foreach-Object { . $_.FullName }
-
-
-# Export all commands except for Test-ElevatedShell
-Export-ModuleMember -Function 'Add-OrganizeMedia'
+# Export the public functions
+Export-ModuleMember -Function $PublicFunctions.BaseName
