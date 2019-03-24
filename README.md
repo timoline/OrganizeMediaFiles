@@ -24,6 +24,15 @@ Or if already exists:
 "DestinationRootPath\2011\201102\20110209_214147_1.jpg"
 ```
 
+```powershell
+$Source = "P:\Upload\lisa"
+
+$Dest = "P:\"
+$Folder = ""
+
+Add-OrganizeMedia -SourceRootPath $Source -DestinationRootPath $Dest -FolderName $Folder -verbose
+```
+
 ## Notes
 Forked from: 
 https://bitbucket.org/toddropog/organize-media-files
