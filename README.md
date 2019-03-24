@@ -13,6 +13,7 @@ file was created and moving them into folders based on the year and month.
 the extensions in FileTypesToOrganize. 
 * It will rename the files and move them to folders under DestinationRootPath, e.g. :
 
+Example:
 ```powershell
 "SourceRootPath\\IMG_2011-02-09_21-41-47_680.jpg"
 ```
